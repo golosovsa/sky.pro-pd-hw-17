@@ -6,7 +6,12 @@
 * flask-restx
 * sqlalchemy
 * marshmallow
+* sqlite
 
 # Project status
 
 - [x] Initial
+- [x] Step 1 Done
+- [x] Step 2 Done
+- [x] Step 3 Done
+- [x] Step 4 Done
