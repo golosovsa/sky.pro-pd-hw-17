@@ -15,3 +15,6 @@
 - [x] Step 2 Done
 - [x] Step 3 Done
 - [x] Step 4 Done
+- [x] Step 1* Done
+- [x] Step 2* Done
+- [x] Step 3* Done

@@ -4,6 +4,7 @@ from flask import Flask, request
 from flask_restx import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow import Schema, fields
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Query
 
 app = Flask(__name__)
@@ -96,6 +97,94 @@ class MoviesView(Resource):
         return movies_schema.dump(data), 200
 
 
+@movies_ns.route("/<int:pk>")
+class MovieView(Resource):
+
+    def get(self, pk):
+        movie = Movie.query.get(pk)
+        return (movie_schema.dump(movie), 200) if movie is not None else ("Movie not found", 404)
+
+
+@directors_ns.route("/")
+class DirectorsView(Resource):
+
+    def post(self):
+        json_object = request.json
+        director = Director(**json_object)
+        try:
+            with db.session():
+                db.session.add(director)
+                db.session.commit()
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
+
+        return "Created", 201
+
+
+@directors_ns.route("/<int:pk>")
+class DirectorView(Resource):
+
+    def put(self, pk):
+        director: Director = Director.query.get(pk)
+        if director is None:
+            return "Director not found", 404
+        json_object = request.json
+        director.name = json_object.get("name")
+        with db.session():
+            db.session.add(director)
+            db.session.commit()
+        return "", 204
+
+    def delete(self, pk):
+        director: Director = Director.query.get(pk)
+        if director is None:
+            return "Director not found", 404
+        with db.session():
+            db.session.delete(director)
+            db.session.commit()
+        return "", 204
+
+
+@genres_ns.route("/")
+class GenresView(Resource):
+
+    def post(self):
+        json_object = request.json
+        genre = Genre(**json_object)
+        try:
+            with db.session():
+                db.session.add(genre)
+                db.session.commit()
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            raise e
+
+        return "Created", 201
+
+
+@genres_ns.route("/<int:pk>")
+class GenreView(Resource):
+
+    def put(self, pk):
+        genre: Genre = Genre.query.get(pk)
+        if genre is None:
+            return "Genre not found", 404
+        json_object = request.json
+        genre.name = json_object.get("name")
+        with db.session():
+            db.session.add(genre)
+            db.session.commit()
+        return "", 204
+
+    def delete(self, pk):
+        genre: Genre = Genre.query.get(pk)
+        if genre is None:
+            return "Genre not found", 404
+        with db.session():
+            db.session.delete(genre)
+            db.session.commit()
+        return "", 204
 
 
 if __name__ == '__main__':
